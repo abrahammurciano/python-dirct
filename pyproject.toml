@@ -12,6 +12,8 @@ keywords = []
 
 [tool.poetry.dependencies]
 python = "^3.11"
+pyyaml = "^6.0.1"
+more-itertools = "^10.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
@@ -20,6 +22,9 @@ pdoc3 = "*"
 toml = "*"
 types-toml = "*"
 mypy = "*"
+
+[tool.poetry.group.dev.dependencies]
+types-pyyaml = "^6.0.12.12"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
