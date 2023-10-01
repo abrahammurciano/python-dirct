@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>dirct API documentation</title>
-<meta name="description" content="Python Package Template …" />
+<meta name="description" content="dirct
+A dict that reflects the contents of a directory …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,116 +23,6 @@
 <h1 class="title">Package <code>dirct</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="python-package-template">Python Package Template</h1>
-<p>This repository contains the basic structure for a python package as well as some useful GitHub actions for maintaining the package.</p>
-<p>In order to use this template you must perform the following steps. In each step I will explain how you can do it manually and I will also provide commands (sorry windows users, sucks to suck) to automate the process where possible.</p>
-<h2 id="1-set-command-variables">1. Set command variables</h2>
-<p>In the following instructions, commands will make reference to several variables. You can set these variables now so you can run all subsequent commands without having to edit them. (Replace <code>&hellip;</code> with actual values.)</p>
-<pre><code class="language-sh">PACKAGE=&quot;...&quot; # The name of your package. Use kebab-case.
-MODULE=$(echo $PACKAGE | tr - _) # The name of your module. Should be the package name in snake_case.
-PACKAGE_DESCRIPTION=&quot;...&quot; # A short description of your package
-YOUR_NAME=&quot;...&quot; # Your name. Use spaces and start each word with an uppercase letter
-YOUR_EMAIL=&quot;...&quot; # Your email address
-GITHUB_USERNAME=&quot;...&quot; # Your GitHub username
-MIN_PYTHON_VERSION=&quot;...&quot; # The minimum version of Python required to use this package
-</code></pre>
-<p>If you won't be using the commands below, just make a note of the values you would give to each variable for when they're needed.</p>
-<h2 id="2-clone-the-template">2. Clone the template</h2>
-<p>Download the code and place it in a folder, then enter the folder. From now on all commands will be relative to this folder.</p>
-<pre><code class="language-sh">git clone https://github.com/abrahammurciano/python-package-template.git python-$PACKAGE
-cd python-$PACKAGE
-rm -rf .git
-</code></pre>
-<h2 id="3-replace-placeholder-text">3. Replace placeholder text</h2>
-<p>There are several placeholders that you must replace with values from step 1. These match this regular expression: <code>&lt;&lt;[A-Z_]+&gt;&gt;</code>. You can use your IDE to find all such placeholders and replace them, or you can use the following commands to do the same.</p>
-<pre><code class="language-sh">find ./ -type f -exec sed -i -e &quot;s/dirct/$PACKAGE/g&quot; {} \;
-find ./ -type f -exec sed -i -e &quot;s/dirct/$MODULE/g&quot; {} \;
-find ./ -type f -exec sed -i -e &quot;s/A dict that reflects the contents of a directory./$PACKAGE_DESCRIPTION/g&quot; {} \;
-find ./ -type f -exec sed -i -e &quot;s/Abraham Murciano/$YOUR_NAME/g&quot; {} \;
-find ./ -type f -exec sed -i -e &quot;s/abrahammurciano@gmail.com/$YOUR_EMAIL/g&quot; {} \;
-find ./ -type f -exec sed -i -e &quot;s/abrahammurciano/$GITHUB_USERNAME/g&quot; {} \;
-find ./ -type f -exec sed -i -e &quot;s/3.11/$MIN_PYTHON_VERSION/g&quot; {} \;
-</code></pre>
-<p>Also don't forget to replace any occurences of a placeholder in folder and file names.</p>
-<pre><code class="language-sh">mv '&lt;&lt;MODULE_NAME&gt;&gt;' $MODULE
-</code></pre>
-<h2 id="4-create-a-github-repository">4. Create a GitHub repository</h2>
-<ul>
-<li>Click <a href="https://github.com/new">here</a> to create a new GitHub repository.</li>
-<li>Name it <code>python-$PACKAGE</code>.</li>
-<li>Enter the value of <code>$PACKAGE_DESCRIPTION</code> as the description.</li>
-<li>Don't initialize the repository with a readme, a .gitignore, a license, or any other files.</li>
-</ul>
-<h2 id="5-store-the-necessary-credentials">5. Store the necessary credentials</h2>
-<h3 id="create-the-necessary-accounts">Create the necessary accounts</h3>
-<ul>
-<li>Create a <a href="https://pypi.org/account/register/">PyPI</a> account if you don't have one.</li>
-</ul>
-<h3 id="create-a-github-personal-access-token">Create a GitHub personal access token</h3>
-<ul>
-<li>Go to <code>Settings</code> &gt; <code>Developer settings</code> &gt; <code>Personal access tokens</code> &gt; <code>Generate new token</code>.</li>
-<li>Name it <code>GitHub Actions for $PACKAGE</code>.</li>
-<li>Set it to not expire.</li>
-<li>Select <code>repo</code> as the <code>Scopes</code> field.</li>
-<li>Click <code>Generate token</code>.</li>
-<li>Copy it for the next step.</li>
-</ul>
-<h3 id="create-a-pypi-token">Create a PyPI token</h3>
-<p>You can generate one <a href="https://pypi.org/manage/account/">here</a>. Name it <code>$PACKAGE</code>.</p>
-<h3 id="create-the-necessary-secrets">Create the necessary secrets</h3>
-<ul>
-<li>Go to <code>your repository</code> &gt; <code>Settings</code> &gt; <code>Secrets</code> &gt; <code>Actions</code>.</li>
-<li>Create five new repository secrets:<ul>
-<li><code>PERSONAL_GH_TOKEN</code></li>
-<li><code>PYPI_TOKEN</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="grant-write-access-to-github-actions">Grant write access to GitHub Actions</h3>
-<ul>
-<li>Go to <code>your repository</code> &gt; <code>Settings</code> &gt; <code>Actions</code> &gt; <code>General</code>.</li>
-<li>Under <code>Workflow permissions</code> select <code>Read and write permissions</code>.</li>
-<li>Click <code>Save</code>.</li>
-</ul>
-<h2 id="6-push-your-code-to-github">6. Push your code to GitHub</h2>
-<p>You can push your code with the following commands.</p>
-<pre><code class="language-sh">git init
-git add .
-git commit -m &quot;Initial commit&quot;
-git branch -M main
-git remote add origin git@github.com:$GITHUB_USERNAME/python-$PACKAGE.git
-git push -u origin main
-</code></pre>
-<h2 id="7-enable-github-pages">7. Enable GitHub pages</h2>
-<ul>
-<li>Go to <code>your repository</code> &gt; <code>Settings</code> &gt; <code>Pages</code>.</li>
-<li>Under <code>source</code> select the branch <code>main</code>.</li>
-<li>Then for the folder, instead of <code>/ (root)</code> choose <code>/docs</code>.</li>
-<li>Click save.</li>
-</ul>
-<h2 id="8-enforce-ci-on-pull-requests-to-main">8. Enforce CI on pull requests to main</h2>
-<p>First you must trigger the flow once so GitHub is aware of its existance.</p>
-<ul>
-<li>Go to <code>your repository</code> &gt; <code>Actions</code> &gt; <code>Tests</code> &gt; <code>Run Workflow</code> &gt; <code>Run Workflow</code></li>
-<li>Go to <code>your repository</code> &gt; <code>Actions</code> &gt; <code>Docs &amp; Format</code> &gt; <code>Run Workflow</code> &gt; <code>Run Workflow</code></li>
-</ul>
-<p>Now you can require the test flow to run.</p>
-<ul>
-<li>Go to <code>your repository</code> &gt; <code>Settings</code> &gt; <code>Branches</code> &gt; <code>Add branch protection rule</code>.</li>
-<li>For the <code>Branch name pattern</code> type <code>main</code>.</li>
-<li>Check <code>Require status checks to pass before merging</code>.</li>
-<li>Type <code>test</code>, make sure it comes up in autocomplete, and click it.</li>
-<li>Type <code>docs_and_format</code>, make sure it comes up in autocomplete, and click it.</li>
-<li>Then click <code>Save changes</code>.</li>
-</ul>
-<h2 id="9-some-notes">9. Some notes</h2>
-<ul>
-<li>If your minimum python version is less than 3.8, replace <code>importlib.metadata</code> with <code>importlib_metadata</code> in your <code>__init__.py</code> and add it as a dependency.</li>
-</ul>
-<pre><code class="language-sh">poetry add importlib_metadata
-</code></pre>
-<h2 id="10-delete-these-instructions">10. Delete these instructions</h2>
-<p>Remove the text up to here from this file.</p>
 <h1 id="dirct">dirct</h1>
 <p>A dict that reflects the contents of a directory.</p>
 <h2 id="installation">Installation</h2>
@@ -143,49 +34,296 @@ git push -u origin main
 <p><a href="https://github.com/abrahammurciano/python-dirct.git"><img alt="Source Code - GitHub" src="https://img.shields.io/badge/Source_Code-GitHub-181717?style=for-the-badge&amp;logo=GitHub&amp;logoColor=%23FFFFFF"></a></p>
 <p><a href="https://pypi.org/project/dirct/"><img alt="PyPI - dirct" src="https://img.shields.io/badge/PyPI-dirct-006DAD?style=for-the-badge&amp;logo=PyPI&amp;logoColor=%23FFD242"></a></p>
 <h2 id="usage">Usage</h2>
+<h3 id="example-directory">Example directory</h3>
+<p>Consider the following directory <code>path/to/directory/</code> that contains data about a video game.</p>
+<pre><code>path/to/directory/
+├── __self__.toml
+├── publisher.toml
+├── version
+└── levels/
+    ├── castle.lvl.json
+    ├── dungeon.lvl.json
+    └── forest.lvl.json
+</code></pre>
+<h3 id="parsing-files">Parsing files</h3>
+<p>The directory may contain any number of files and subdirectories. Files ending in <code>.toml</code>, <code>.json</code>, <code>.yaml</code>, and <code>.yml</code> are parsed correctly according to their respective formats, and all other files are read as text if it can be decoded or as bytes otherwise. You can associate custom parsers with file extensions by passing them to the <code>parsers</code> argument of the <code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code> constructor.</p>
+<pre><code class="language-python">Dirct(&quot;path/to/directory&quot;, parsers={&quot;csv&quot;: lambda s: tuple(csv.DictReader(io.StringIO(s)))})
+</code></pre>
+<h3 id="mapping-files-tofrom-keys">Mapping files to/from keys</h3>
+<p>Converting between file names and dictionary keys is handled by a <code><a title="dirct.KeyMapper" href="#dirct.KeyMapper">KeyMapper</a></code> object, which can be passed to the <code>key_mapper</code> argument of the <code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code> constructor.</p>
+<h4 id="basename-key-mapper-default">Basename key mapper (default)</h4>
+<p>The basename key mapper ignores leading dots and all trailing extensions. If <code>hidden=False</code> is passed to the constructor, then leading dots are not ignored.</p>
+<p>In case of a name collision when mapping a key to a path, an <code>AmbiguityError</code> is raised unless <code>strict=False</code> was passed to the constructor, in which case a warning is logged and one of the paths is chosen. (For a given directory's contents, the same path will be chosen consistently.)</p>
+<pre><code class="language-python">&gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;) # Default key mapper
+&gt;&gt;&gt; tuple(d.keys())
+('publisher', 'version', 'levels')
+&gt;&gt;&gt; d[&quot;publisher&quot;] # Gets the contents of publisher.toml
+{'name': 'Probabilitor the Annoying', 'founded': 2015}
+&gt;&gt;&gt; d[&quot;publisher.toml&quot;] # Also works
+{'name': 'Probabilitor the Annoying', 'founded': 2015}
+&gt;&gt;&gt; d[&quot;.publisher.foo.json&quot;] # Also works because the leading dot and file extensions are ignored
+{'name': 'Probabilitor the Annoying', 'founded': 2015}
+</code></pre>
+<h4 id="exact-key-mapper">Exact key mapper</h4>
+<p>The exact key mapper only recognizes keys that exactly match the file/directory names.</p>
+<pre><code class="language-python">&gt;&gt;&gt; from dirct import ExactKeyMapper
+&gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;, key_mapper=ExactKeyMapper())
+&gt;&gt;&gt; tuple(d.keys())
+('publisher.toml', 'version', 'levels')
+&gt;&gt;&gt; d[&quot;publisher.toml&quot;] # Gets the contents of publisher.toml
+{'name': 'Probabilitor the Annoying', 'founded': 2015}
+&gt;&gt;&gt; d[&quot;publisher&quot;]
+KeyError: 'publisher'
+&gt;&gt;&gt; d[&quot;.publisher.toml&quot;]
+KeyError: '.publisher.toml'
+&gt;&gt;&gt; d[&quot;publisher.json&quot;]
+KeyError: 'publisher.json'
+</code></pre>
+<h3 id="__self__"><code>__self__</code></h3>
+<p>A directory may contain a single special file called <code>__self__.*</code> with any known extension. The contents of this file are parsed to a dictionary (an <code>InvalidSelfError</code> is raised if it can't be parsed as a dictionary) which is then merged with the rest of the directory's contents (explicit files/subdirectories take precedence over <code>__self__.*</code>). This allows you to keep some of the keys in a single file and the rest in separate files or subdirectories.</p>
+<p>For example, <code>__self__.toml</code> may contain the following:</p>
+<pre><code class="language-toml">name = &quot;Dungeons, Dungeons, and More Dungeons&quot;
+release_date = 2021-01-01
+</code></pre>
+<pre><code class="language-python">&gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;)
+&gt;&gt;&gt; d[&quot;name&quot;]
+'Dungeons, Dungeons, and More Dungeons'
+</code></pre>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="dirct.dirct" href="dirct.html">dirct.dirct</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dirct.exceptions" href="exceptions.html">dirct.exceptions</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="dirct.key_mappers" href="key_mappers/index.html">dirct.key_mappers</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </section>
 <section>
 </section>
 <section>
 </section>
 <section>
-</section>
-<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="dirct.BasenameKeyMapper"><code class="flex name class">
+<span>class <span class="ident">BasenameKeyMapper</span></span>
+<span>(</span><span>hidden: bool = True, strict: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A key mapper that ignores leading dots and trailing file extensions in both keys and file names.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>hidden</code></strong></dt>
+<dd>Whether to include hidden files (i.e. files starting with a dot).</dd>
+<dt><strong><code>strict</code></strong></dt>
+<dd>Whether to raise a AmbiguityError if multiple files match a key.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="dirct.BasenameKeyMapper.get_path"><code class="name flex">
+<span>def <span class="ident">get_path</span></span>(<span>self, key: str, parent: pathlib.Path) ‑> pathlib.Path | None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="dirct.BasenameKeyMapper.key_of"><code class="name flex">
+<span>def <span class="ident">key_of</span></span>(<span>self, path: pathlib.Path) ‑> str | None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="dirct.Dirct"><code class="flex name class">
+<span>class <span class="ident">Dirct</span></span>
+<span>(</span><span>path: str | os.PathLike[str], parsers: Mapping[str, Callable[[str], Any]] = {}, key_mapper: <a title="dirct.key_mappers.key_mapper.KeyMapper" href="key_mappers/key_mapper.html#dirct.key_mappers.key_mapper.KeyMapper">KeyMapper</a> = &lt;dirct.key_mappers.basename_key_mapper.BasenameKeyMapper object&gt;)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A dict that reflects the contents of a directory.</p>
+<p>The keys are the names of the files/subdirectories in the directory (subject to the rules imposed by the given <code>key_mapper</code>). The values are the parsed contents of the files, or nested Dirct objects for subdirectories.</p>
+<p>This class does no caching, so it will reflect any changes to the directory's contents. If you want to load the contents of the directory once and then use them, use <code>to_dict()</code> method.</p>
+<p>Additionally, if the directory contains a file named <strong>self</strong>.* (where * is any file extension supported by the parsers), the contents of that file will be added to the Dirct as well. This allows you to keep some of the keys in a single file and the rest in separate files or subdirectories.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>The path to the directory.</dd>
+<dt><strong><code>parsers</code></strong></dt>
+<dd>A mapping of additional file extensions to parse functions.</dd>
+<dt><strong><code>key_converter</code></strong></dt>
+<dd>A key converter to use to convert keys to paths and vice versa. Defaults to a BasenameConverter, which ignores leading dots and trailing file extensions.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>dirct.dirct._BaseDirct</li>
+<li>collections.abc.Mapping</li>
+<li>collections.abc.Collection</li>
+<li>collections.abc.Sized</li>
+<li>collections.abc.Iterable</li>
+<li>collections.abc.Container</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="dirct.Dirct.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert this Dirct to a plain dict, recursively converting all subdirectories to dicts as well.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="dirct.ExactKeyMapper"><code class="flex name class">
+<span>class <span class="ident">ExactKeyMapper</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>A key mapper that maps keys and file names if and only if they are exactly the same.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="dirct.ExactKeyMapper.get_path"><code class="name flex">
+<span>def <span class="ident">get_path</span></span>(<span>self, key: str, parent: pathlib.Path) ‑> pathlib.Path | None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="dirct.ExactKeyMapper.key_of"><code class="name flex">
+<span>def <span class="ident">key_of</span></span>(<span>self, path: pathlib.Path) ‑> str | None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="dirct.FilesystemDirct"><code class="flex name class">
+<span>class <span class="ident">FilesystemDirct</span></span>
+<span>(</span><span>path: str | os.PathLike[str], parsers: Mapping[str, Callable[[str], Any]] = {}, key_mapper: <a title="dirct.key_mappers.key_mapper.KeyMapper" href="key_mappers/key_mapper.html#dirct.key_mappers.key_mapper.KeyMapper">KeyMapper</a> = &lt;dirct.key_mappers.basename_key_mapper.BasenameKeyMapper object&gt;)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A dict that reflects the contents of a directory on the filesystem.</p>
+<p>The keys are the names of the files/subdirectories in the directory (subject to the rules imposed by the given <code>key_mapper</code>). The values are the parsed contents of the files, or nested Dirct objects for subdirectories.</p>
+<p>This class does no caching, so it will reflect any changes to the directory's contents. If you want to load the contents of the directory once and then use them, use <code>to_dict()</code> method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>The path to the directory.</dd>
+<dt><strong><code>parsers</code></strong></dt>
+<dd>A mapping of additional file extensions to parse functions.</dd>
+<dt><strong><code>key_mapper</code></strong></dt>
+<dd>A key converter to use to convert keys to paths and vice versa. Defaults to a BasenameConverter, which ignores leading dots and trailing file extensions.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>dirct.dirct._BaseDirct</li>
+<li>collections.abc.Mapping</li>
+<li>collections.abc.Collection</li>
+<li>collections.abc.Sized</li>
+<li>collections.abc.Iterable</li>
+<li>collections.abc.Container</li>
+<li>typing.Generic</li>
+</ul>
+</dd>
+<dt id="dirct.KeyMapper"><code class="flex name class">
+<span>class <span class="ident">KeyMapper</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A protocol for classes that map keys to and from paths.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Protocol</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="dirct.KeyMapper.get_path"><code class="name flex">
+<span>def <span class="ident">get_path</span></span>(<span>self, key: str, parent: pathlib.Path) ‑> pathlib.Path | None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the child of parent for the given key, or return None if the key does not correspond to a path.</p></div>
+</dd>
+<dt id="dirct.KeyMapper.key_of"><code class="name flex">
+<span>def <span class="ident">key_of</span></span>(<span>self, path: pathlib.Path) ‑> str | None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the key for the given path, or return None if the path does not correspond to a key.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#python-package-template">Python Package Template</a><ul>
-<li><a href="#1-set-command-variables">1. Set command variables</a></li>
-<li><a href="#2-clone-the-template">2. Clone the template</a></li>
-<li><a href="#3-replace-placeholder-text">3. Replace placeholder text</a></li>
-<li><a href="#4-create-a-github-repository">4. Create a GitHub repository</a></li>
-<li><a href="#5-store-the-necessary-credentials">5. Store the necessary credentials</a><ul>
-<li><a href="#create-the-necessary-accounts">Create the necessary accounts</a></li>
-<li><a href="#create-a-github-personal-access-token">Create a GitHub personal access token</a></li>
-<li><a href="#create-a-pypi-token">Create a PyPI token</a></li>
-<li><a href="#create-the-necessary-secrets">Create the necessary secrets</a></li>
-<li><a href="#grant-write-access-to-github-actions">Grant write access to GitHub Actions</a></li>
-</ul>
-</li>
-<li><a href="#6-push-your-code-to-github">6. Push your code to GitHub</a></li>
-<li><a href="#7-enable-github-pages">7. Enable GitHub pages</a></li>
-<li><a href="#8-enforce-ci-on-pull-requests-to-main">8. Enforce CI on pull requests to main</a></li>
-<li><a href="#9-some-notes">9. Some notes</a></li>
-<li><a href="#10-delete-these-instructions">10. Delete these instructions</a></li>
-</ul>
-</li>
 <li><a href="#dirct">dirct</a><ul>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#links">Links</a></li>
-<li><a href="#usage">Usage</a></li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#example-directory">Example directory</a></li>
+<li><a href="#parsing-files">Parsing files</a></li>
+<li><a href="#mapping-files-tofrom-keys">Mapping files to/from keys</a><ul>
+<li><a href="#basename-key-mapper-default">Basename key mapper (default)</a></li>
+<li><a href="#exact-key-mapper">Exact key mapper</a></li>
+</ul>
+</li>
+<li><a href="#__self__">__self__</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
 <ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="dirct.dirct" href="dirct.html">dirct.dirct</a></code></li>
+<li><code><a title="dirct.exceptions" href="exceptions.html">dirct.exceptions</a></code></li>
+<li><code><a title="dirct.key_mappers" href="key_mappers/index.html">dirct.key_mappers</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="dirct.BasenameKeyMapper" href="#dirct.BasenameKeyMapper">BasenameKeyMapper</a></code></h4>
+<ul class="">
+<li><code><a title="dirct.BasenameKeyMapper.get_path" href="#dirct.BasenameKeyMapper.get_path">get_path</a></code></li>
+<li><code><a title="dirct.BasenameKeyMapper.key_of" href="#dirct.BasenameKeyMapper.key_of">key_of</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code></h4>
+<ul class="">
+<li><code><a title="dirct.Dirct.to_dict" href="#dirct.Dirct.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="dirct.ExactKeyMapper" href="#dirct.ExactKeyMapper">ExactKeyMapper</a></code></h4>
+<ul class="">
+<li><code><a title="dirct.ExactKeyMapper.get_path" href="#dirct.ExactKeyMapper.get_path">get_path</a></code></li>
+<li><code><a title="dirct.ExactKeyMapper.key_of" href="#dirct.ExactKeyMapper.key_of">key_of</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="dirct.FilesystemDirct" href="#dirct.FilesystemDirct">FilesystemDirct</a></code></h4>
+</li>
+<li>
+<h4><code><a title="dirct.KeyMapper" href="#dirct.KeyMapper">KeyMapper</a></code></h4>
+<ul class="">
+<li><code><a title="dirct.KeyMapper.get_path" href="#dirct.KeyMapper.get_path">get_path</a></code></li>
+<li><code><a title="dirct.KeyMapper.key_of" href="#dirct.KeyMapper.key_of">key_of</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </nav>
 </main>
