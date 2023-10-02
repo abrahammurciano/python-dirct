@@ -29,10 +29,15 @@ def version() -> str:
 @pytest.fixture
 def levels() -> dict[str, dict[str, Any]]:
     return {
-        "castle": {"level": "Castle"},
-        "dungeon": {"level": "Dungeon"},
-        "forest": {"level": "Forest"},
+        "castle.lvl.toml": {"level": "Castle"},
+        "dungeon.lvl.toml": {"level": "Dungeon"},
+        "forest.lvl.toml": {"level": "Forest"},
     }
+
+
+@pytest.fixture
+def exe() -> bytes:
+    return bytes(range(256))
 
 
 @pytest.fixture
@@ -41,12 +46,14 @@ def expected(
     publisher: dict[str, Any],
     version: str,
     levels: dict[str, dict[str, Any]],
+    exe: bytes,
 ) -> dict[str, Any]:
     return {
         **self_data,
-        "publisher": publisher,
+        "publisher.toml": publisher,
         "version": version,
         "levels": levels,
+        "exe": exe,
     }
 
 
@@ -57,6 +64,7 @@ def directory(
     publisher: dict[str, Any],
     version: str,
     levels: dict[str, dict[str, Any]],
+    exe: bytes,
 ) -> Path:
     base_dir = tmp_path / "directory"
     base_dir.mkdir()
@@ -64,11 +72,12 @@ def directory(
     (base_dir / "__self__.toml").write_text(toml.dumps(self_data))
     (base_dir / "publisher.toml").write_text(toml.dumps(publisher))
     (base_dir / "version").write_text(version)
+    (base_dir / "exe").write_bytes(exe)
 
     levels_dir = base_dir / "levels"
     levels_dir.mkdir()
     for name, data in levels.items():
-        (levels_dir / f"{name}.toml").write_text(toml.dumps(data))
+        (levels_dir / name).write_text(toml.dumps(data))
 
     return base_dir
 

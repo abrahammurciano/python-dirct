@@ -3,7 +3,7 @@ from typing import Iterable
 
 import pytest
 
-from dirct import ExactKeyMapper, KeyMapper
+from dirct.key_mappers import ExactKeyMapper, KeyMapper
 
 
 @pytest.fixture
