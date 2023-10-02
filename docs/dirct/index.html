@@ -34,6 +34,25 @@ A dict that reflects the contents of a directory …" />
 <p><a href="https://github.com/abrahammurciano/python-dirct.git"><img alt="Source Code - GitHub" src="https://img.shields.io/badge/Source_Code-GitHub-181717?style=for-the-badge&amp;logo=GitHub&amp;logoColor=%23FFFFFF"></a></p>
 <p><a href="https://pypi.org/project/dirct/"><img alt="PyPI - dirct" src="https://img.shields.io/badge/PyPI-dirct-006DAD?style=for-the-badge&amp;logo=PyPI&amp;logoColor=%23FFD242"></a></p>
 <h2 id="usage">Usage</h2>
+<h3 id="basic-usage">Basic usage</h3>
+<pre><code class="language-python">&gt;&gt;&gt; from dirct import Dirct
+&gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;)
+&gt;&gt;&gt; from typing import Mapping
+&gt;&gt;&gt; isinstance(d, Mapping)
+True
+</code></pre>
+<h3 id="loading-files">Loading files</h3>
+<p>The directory may contain any number of files and subdirectories. Files ending in <code>.toml</code>, <code>.json</code>, <code>.yaml</code>, and <code>.yml</code> are parsed correctly according to their respective formats, and all other files are read as text if it can be decoded or as bytes otherwise.</p>
+<p>You can also pass custom loader callables to the <code><a title="dirct.loaders" href="loaders.html">dirct.loaders</a></code> parameter of the <code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code> constructor. A loader callable takes the <code>Path</code> to a file and returns the value that file represents. The <code>DEFAULT_LOADERS</code> constant contains loaders for the aforementioned file formats.</p>
+<pre><code class="language-python">from dirct import Dirct, DEFAULT_PARSERS
+
+def csv_loader(path: Path) -&gt; Sequence[Mapping[str, str]]:
+    with path.open() as f:
+        return tuple(csv.DictReader(f))
+
+Dirct(&quot;path/to/directory&quot;, loaders=(csv_loader, *DEFAULT_LOADERS))
+</code></pre>
+<p>Loaders are tried in order. If a loader raises an <code>UnsupportedFileError</code> then the next loader is tried. If a loader raises any other type of <code>Exception</code> it is propagated. If no loader can load a file, then an <code>UnsupportedFileError</code> is raised.</p>
 <h3 id="example-directory">Example directory</h3>
 <p>Consider the following directory <code>path/to/directory/</code> that contains data about a video game.</p>
 <pre><code>path/to/directory/
@@ -45,26 +64,35 @@ A dict that reflects the contents of a directory …" />
     ├── dungeon.lvl.json
     └── forest.lvl.json
 </code></pre>
-<h3 id="parsing-files">Parsing files</h3>
-<p>The directory may contain any number of files and subdirectories. Files ending in <code>.toml</code>, <code>.json</code>, <code>.yaml</code>, and <code>.yml</code> are parsed correctly according to their respective formats, and all other files are read as text if it can be decoded or as bytes otherwise. You can associate custom parsers with file extensions by passing them to the <code>parsers</code> argument of the <code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code> constructor.</p>
-<pre><code class="language-python">Dirct(&quot;path/to/directory&quot;, parsers={&quot;csv&quot;: lambda s: tuple(csv.DictReader(io.StringIO(s)))})
+<p>Creating a <code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code> with this directory would produce a mapping with the following structure.</p>
+<pre><code class="language-py">&gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;).to_dict()
+{
+    &quot;name&quot;: &quot;Dungeons, Dungeons, and More Dungeons&quot;, # From __self__.toml
+    &quot;release_date&quot;: datetime.date(2021, 1, 1), # From __self__.toml
+    &quot;version&quot;: &quot;1.0.0&quot;,
+    &quot;publisher.toml&quot;: {
+        &quot;name&quot;: &quot;Probabilitor the Annoying&quot;,
+        &quot;founded&quot;: 2015
+    },
+    &quot;levels&quot;: {
+        &quot;castle.lvl.json&quot;: {
+            &quot;name&quot;: &quot;Castle&quot;,
+            &quot;enemies&quot;: [&quot;goblin&quot;, &quot;orc&quot;, &quot;ogre&quot;]
+        },
+        &quot;dungeon.lvl.json&quot;: {
+            &quot;name&quot;: &quot;Dungeon&quot;,
+            &quot;enemies&quot;: [&quot;skeleton&quot;, &quot;zombie&quot;, &quot;ghost&quot;]
+        },
+        &quot;forest.lvl.json&quot;: {
+            &quot;name&quot;: &quot;Forest&quot;,
+            &quot;enemies&quot;: [&quot;wolf&quot;, &quot;bear&quot;, &quot;dragon&quot;]
+        }
+    }
+}
 </code></pre>
 <h3 id="mapping-files-tofrom-keys">Mapping files to/from keys</h3>
-<p>Converting between file names and dictionary keys is handled by a <code><a title="dirct.KeyMapper" href="#dirct.KeyMapper">KeyMapper</a></code> object, which can be passed to the <code>key_mapper</code> argument of the <code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code> constructor.</p>
-<h4 id="basename-key-mapper-default">Basename key mapper (default)</h4>
-<p>The basename key mapper ignores leading dots and all trailing extensions. If <code>hidden=False</code> is passed to the constructor, then leading dots are not ignored.</p>
-<p>In case of a name collision when mapping a key to a path, an <code>AmbiguityError</code> is raised unless <code>strict=False</code> was passed to the constructor, in which case a warning is logged and one of the paths is chosen. (For a given directory's contents, the same path will be chosen consistently.)</p>
-<pre><code class="language-python">&gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;) # Default key mapper
-&gt;&gt;&gt; tuple(d.keys())
-('publisher', 'version', 'levels')
-&gt;&gt;&gt; d[&quot;publisher&quot;] # Gets the contents of publisher.toml
-{'name': 'Probabilitor the Annoying', 'founded': 2015}
-&gt;&gt;&gt; d[&quot;publisher.toml&quot;] # Also works
-{'name': 'Probabilitor the Annoying', 'founded': 2015}
-&gt;&gt;&gt; d[&quot;.publisher.foo.json&quot;] # Also works because the leading dot and file extensions are ignored
-{'name': 'Probabilitor the Annoying', 'founded': 2015}
-</code></pre>
-<h4 id="exact-key-mapper">Exact key mapper</h4>
+<p>Converting between file names and dictionary keys is handled by a <code>KeyMapper</code> object, which can be passed to the <code>key_mapper</code> argument of the <code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code> constructor.</p>
+<h4 id="exact-key-mapper-default">Exact key mapper (default)</h4>
 <p>The exact key mapper only recognizes keys that exactly match the file/directory names.</p>
 <pre><code class="language-python">&gt;&gt;&gt; from dirct import ExactKeyMapper
 &gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;, key_mapper=ExactKeyMapper())
@@ -78,6 +106,19 @@ KeyError: 'publisher'
 KeyError: '.publisher.toml'
 &gt;&gt;&gt; d[&quot;publisher.json&quot;]
 KeyError: 'publisher.json'
+</code></pre>
+<h4 id="basename-key-mapper">Basename key mapper</h4>
+<p>The basename key mapper ignores leading dots and all trailing extensions. If <code>hidden=False</code> is passed to the constructor, then leading dots are not ignored.</p>
+<p>In case of a name collision when mapping a key to a path, an <code>AmbiguityError</code> is raised unless <code>strict=False</code> was passed to the constructor, in which case a warning is logged and one of the paths is chosen. (For a given directory's contents, the same path will be chosen consistently.)</p>
+<pre><code class="language-python">&gt;&gt;&gt; d = Dirct(&quot;path/to/directory&quot;) # Default key mapper
+&gt;&gt;&gt; tuple(d.keys())
+('publisher', 'version', 'levels')
+&gt;&gt;&gt; d[&quot;publisher&quot;] # Gets the contents of publisher.toml
+{'name': 'Probabilitor the Annoying', 'founded': 2015}
+&gt;&gt;&gt; d[&quot;publisher.toml&quot;] # Also works
+{'name': 'Probabilitor the Annoying', 'founded': 2015}
+&gt;&gt;&gt; d[&quot;.publisher.foo.json&quot;] # Also works because the leading dot and file extensions are ignored
+{'name': 'Probabilitor the Annoying', 'founded': 2015}
 </code></pre>
 <h3 id="__self__"><code>__self__</code></h3>
 <p>A directory may contain a single special file called <code>__self__.*</code> with any known extension. The contents of this file are parsed to a dictionary (an <code>InvalidSelfError</code> is raised if it can't be parsed as a dictionary) which is then merged with the rest of the directory's contents (explicit files/subdirectories take precedence over <code>__self__.*</code>). This allows you to keep some of the keys in a single file and the rest in separate files or subdirectories.</p>
@@ -105,6 +146,10 @@ release_date = 2021-01-01
 <dd>
 <div class="desc"></div>
 </dd>
+<dt><code class="name"><a title="dirct.loaders" href="loaders.html">dirct.loaders</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 </dl>
 </section>
 <section>
@@ -114,56 +159,28 @@ release_date = 2021-01-01
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="dirct.BasenameKeyMapper"><code class="flex name class">
-<span>class <span class="ident">BasenameKeyMapper</span></span>
-<span>(</span><span>hidden: bool = True, strict: bool = True)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>A key mapper that ignores leading dots and trailing file extensions in both keys and file names.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>hidden</code></strong></dt>
-<dd>Whether to include hidden files (i.e. files starting with a dot).</dd>
-<dt><strong><code>strict</code></strong></dt>
-<dd>Whether to raise a AmbiguityError if multiple files match a key.</dd>
-</dl></div>
-<h3>Methods</h3>
-<dl>
-<dt id="dirct.BasenameKeyMapper.get_path"><code class="name flex">
-<span>def <span class="ident">get_path</span></span>(<span>self, key: str, parent: pathlib.Path) ‑> pathlib.Path | None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="dirct.BasenameKeyMapper.key_of"><code class="name flex">
-<span>def <span class="ident">key_of</span></span>(<span>self, path: pathlib.Path) ‑> str | None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-</dd>
 <dt id="dirct.Dirct"><code class="flex name class">
 <span>class <span class="ident">Dirct</span></span>
-<span>(</span><span>path: str | os.PathLike[str], parsers: Mapping[str, Callable[[str], Any]] = {}, key_mapper: <a title="dirct.key_mappers.key_mapper.KeyMapper" href="key_mappers/key_mapper.html#dirct.key_mappers.key_mapper.KeyMapper">KeyMapper</a> = &lt;dirct.key_mappers.basename_key_mapper.BasenameKeyMapper object&gt;)</span>
+<span>(</span><span>path: str | os.PathLike[str], loaders: Iterable[Callable[[pathlib.Path], Any]] = (&lt;dirct.loaders.TomlLoader object&gt;, &lt;dirct.loaders.YamlLoader object&gt;, &lt;dirct.loaders.JsonLoader object&gt;, &lt;dirct.loaders.TextLoader object&gt;, &lt;dirct.loaders.BinaryLoader object&gt;), key_mapper: <a title="dirct.key_mappers.key_mapper.KeyMapper" href="key_mappers/key_mapper.html#dirct.key_mappers.key_mapper.KeyMapper">KeyMapper</a> = &lt;dirct.key_mappers.exact_key_mapper.ExactKeyMapper object&gt;)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A dict that reflects the contents of a directory.</p>
 <p>The keys are the names of the files/subdirectories in the directory (subject to the rules imposed by the given <code>key_mapper</code>). The values are the parsed contents of the files, or nested Dirct objects for subdirectories.</p>
 <p>This class does no caching, so it will reflect any changes to the directory's contents. If you want to load the contents of the directory once and then use them, use <code>to_dict()</code> method.</p>
 <p>Additionally, if the directory contains a file named <strong>self</strong>.* (where * is any file extension supported by the parsers), the contents of that file will be added to the Dirct as well. This allows you to keep some of the keys in a single file and the rest in separate files or subdirectories.</p>
+<p>The <code><a title="dirct.loaders" href="loaders.html">dirct.loaders</a></code> parameter can be passed to specify which loaders to use to try to load files. A loader is a callable that takes a <code>Path</code> and returns the parsed contents. Loaders are tried in order. If a loader raises <code>UnsupportedFileError</code>, the next loader is tried, but if it raises any other kind of exception, it is propagated. If no loader can load a file, <code>UnsupportedFileError</code> is raised.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong></dt>
 <dd>The path to the directory.</dd>
-<dt><strong><code>parsers</code></strong></dt>
-<dd>A mapping of additional file extensions to parse functions.</dd>
+<dt><strong><code>loaders</code></strong></dt>
+<dd>The callables to use to try to load files. Defaults to <code>DEFAULT_LOADERS</code>, which supports JSON, YAML, TOML, plain text, and binary files.</dd>
 <dt><strong><code>key_converter</code></strong></dt>
-<dd>A key converter to use to convert keys to paths and vice versa. Defaults to a BasenameConverter, which ignores leading dots and trailing file extensions.</dd>
+<dd>A key converter to use to convert keys to paths and vice versa. Defaults to an <code>ExactKeyMapper</code> that uses the exact file names as keys.</dd>
 </dl></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li>dirct.dirct._BaseDirct</li>
+<li>dirct._base_dirct.BaseDirct</li>
 <li>collections.abc.Mapping</li>
 <li>collections.abc.Collection</li>
 <li>collections.abc.Sized</li>
@@ -181,82 +198,6 @@ release_date = 2021-01-01
 </dd>
 </dl>
 </dd>
-<dt id="dirct.ExactKeyMapper"><code class="flex name class">
-<span>class <span class="ident">ExactKeyMapper</span></span>
-</code></dt>
-<dd>
-<div class="desc"><p>A key mapper that maps keys and file names if and only if they are exactly the same.</p></div>
-<h3>Methods</h3>
-<dl>
-<dt id="dirct.ExactKeyMapper.get_path"><code class="name flex">
-<span>def <span class="ident">get_path</span></span>(<span>self, key: str, parent: pathlib.Path) ‑> pathlib.Path | None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="dirct.ExactKeyMapper.key_of"><code class="name flex">
-<span>def <span class="ident">key_of</span></span>(<span>self, path: pathlib.Path) ‑> str | None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-</dd>
-<dt id="dirct.FilesystemDirct"><code class="flex name class">
-<span>class <span class="ident">FilesystemDirct</span></span>
-<span>(</span><span>path: str | os.PathLike[str], parsers: Mapping[str, Callable[[str], Any]] = {}, key_mapper: <a title="dirct.key_mappers.key_mapper.KeyMapper" href="key_mappers/key_mapper.html#dirct.key_mappers.key_mapper.KeyMapper">KeyMapper</a> = &lt;dirct.key_mappers.basename_key_mapper.BasenameKeyMapper object&gt;)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>A dict that reflects the contents of a directory on the filesystem.</p>
-<p>The keys are the names of the files/subdirectories in the directory (subject to the rules imposed by the given <code>key_mapper</code>). The values are the parsed contents of the files, or nested Dirct objects for subdirectories.</p>
-<p>This class does no caching, so it will reflect any changes to the directory's contents. If you want to load the contents of the directory once and then use them, use <code>to_dict()</code> method.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>path</code></strong></dt>
-<dd>The path to the directory.</dd>
-<dt><strong><code>parsers</code></strong></dt>
-<dd>A mapping of additional file extensions to parse functions.</dd>
-<dt><strong><code>key_mapper</code></strong></dt>
-<dd>A key converter to use to convert keys to paths and vice versa. Defaults to a BasenameConverter, which ignores leading dots and trailing file extensions.</dd>
-</dl></div>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>dirct.dirct._BaseDirct</li>
-<li>collections.abc.Mapping</li>
-<li>collections.abc.Collection</li>
-<li>collections.abc.Sized</li>
-<li>collections.abc.Iterable</li>
-<li>collections.abc.Container</li>
-<li>typing.Generic</li>
-</ul>
-</dd>
-<dt id="dirct.KeyMapper"><code class="flex name class">
-<span>class <span class="ident">KeyMapper</span></span>
-<span>(</span><span>*args, **kwargs)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>A protocol for classes that map keys to and from paths.</p></div>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>typing.Protocol</li>
-<li>typing.Generic</li>
-</ul>
-<h3>Methods</h3>
-<dl>
-<dt id="dirct.KeyMapper.get_path"><code class="name flex">
-<span>def <span class="ident">get_path</span></span>(<span>self, key: str, parent: pathlib.Path) ‑> pathlib.Path | None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the child of parent for the given key, or return None if the key does not correspond to a path.</p></div>
-</dd>
-<dt id="dirct.KeyMapper.key_of"><code class="name flex">
-<span>def <span class="ident">key_of</span></span>(<span>self, path: pathlib.Path) ‑> str | None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the key for the given path, or return None if the path does not correspond to a key.</p></div>
-</dd>
-</dl>
-</dd>
 </dl>
 </section>
 </article>
@@ -268,11 +209,12 @@ release_date = 2021-01-01
 <li><a href="#installation">Installation</a></li>
 <li><a href="#links">Links</a></li>
 <li><a href="#usage">Usage</a><ul>
+<li><a href="#basic-usage">Basic usage</a></li>
+<li><a href="#loading-files">Loading files</a></li>
 <li><a href="#example-directory">Example directory</a></li>
-<li><a href="#parsing-files">Parsing files</a></li>
 <li><a href="#mapping-files-tofrom-keys">Mapping files to/from keys</a><ul>
-<li><a href="#basename-key-mapper-default">Basename key mapper (default)</a></li>
-<li><a href="#exact-key-mapper">Exact key mapper</a></li>
+<li><a href="#exact-key-mapper-default">Exact key mapper (default)</a></li>
+<li><a href="#basename-key-mapper">Basename key mapper</a></li>
 </ul>
 </li>
 <li><a href="#__self__">__self__</a></li>
@@ -288,38 +230,15 @@ release_date = 2021-01-01
 <li><code><a title="dirct.dirct" href="dirct.html">dirct.dirct</a></code></li>
 <li><code><a title="dirct.exceptions" href="exceptions.html">dirct.exceptions</a></code></li>
 <li><code><a title="dirct.key_mappers" href="key_mappers/index.html">dirct.key_mappers</a></code></li>
+<li><code><a title="dirct.loaders" href="loaders.html">dirct.loaders</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="dirct.BasenameKeyMapper" href="#dirct.BasenameKeyMapper">BasenameKeyMapper</a></code></h4>
-<ul class="">
-<li><code><a title="dirct.BasenameKeyMapper.get_path" href="#dirct.BasenameKeyMapper.get_path">get_path</a></code></li>
-<li><code><a title="dirct.BasenameKeyMapper.key_of" href="#dirct.BasenameKeyMapper.key_of">key_of</a></code></li>
-</ul>
-</li>
-<li>
 <h4><code><a title="dirct.Dirct" href="#dirct.Dirct">Dirct</a></code></h4>
 <ul class="">
 <li><code><a title="dirct.Dirct.to_dict" href="#dirct.Dirct.to_dict">to_dict</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="dirct.ExactKeyMapper" href="#dirct.ExactKeyMapper">ExactKeyMapper</a></code></h4>
-<ul class="">
-<li><code><a title="dirct.ExactKeyMapper.get_path" href="#dirct.ExactKeyMapper.get_path">get_path</a></code></li>
-<li><code><a title="dirct.ExactKeyMapper.key_of" href="#dirct.ExactKeyMapper.key_of">key_of</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="dirct.FilesystemDirct" href="#dirct.FilesystemDirct">FilesystemDirct</a></code></h4>
-</li>
-<li>
-<h4><code><a title="dirct.KeyMapper" href="#dirct.KeyMapper">KeyMapper</a></code></h4>
-<ul class="">
-<li><code><a title="dirct.KeyMapper.get_path" href="#dirct.KeyMapper.get_path">get_path</a></code></li>
-<li><code><a title="dirct.KeyMapper.key_of" href="#dirct.KeyMapper.key_of">key_of</a></code></li>
 </ul>
 </li>
 </ul>
