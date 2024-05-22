@@ -21,8 +21,7 @@ class FileExtensionLoader(ABC):
         raise UnsupportedFileError
 
     @abstractmethod
-    def load(self, path: Path) -> Any:
-        ...
+    def load(self, path: Path) -> Any: ...
 
 
 class TomlLoader(FileExtensionLoader):
